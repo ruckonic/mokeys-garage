@@ -1,0 +1,56 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum VehiculoStatus {
+  REPARADO
+  PENDIENTE
+}
+
+enum TurismoVehiculoGama {
+  ALTA
+  MEDIA
+  BAJA
+}
+
+model Vehiculo {
+  id                  Int                  @id @default(autoincrement())
+  matricula           String
+  observaciones       String
+  reparacion          VehiculoStatus       @default(PENDIENTE)
+  fechaAlta           DateTime             @default(now())
+  createAt            DateTime             @default(now())
+  updateAt            DateTime             @updatedAt
+  turismoVehiculo     TurismoVehiculo?
+  CamionVehiculo      CamionVehiculo?
+  MotocicletaVehiculo MotocicletaVehiculo?
+}
+
+model TurismoVehiculo {
+  id            Int                 @id @default(autoincrement())
+  numeroPlazas  Int
+  medidaLlantas Float
+  gama          TurismoVehiculoGama @default(BAJA)
+  vehiculo      Vehiculo            @relation(fields: vehiculoId, references: id)
+  vehiculoId    Int                 @unique
+}
+
+model CamionVehiculo {
+  id         Int      @id @default(autoincrement())
+  tara       Float
+  cma        Float
+  vehiculo   Vehiculo @relation(fields: vehiculoId, references: id)
+  vehiculoId Int      @unique
+}
+
+model MotocicletaVehiculo {
+  id         Int      @id @default(autoincrement())
+  cilindrada Int
+  vehiculo   Vehiculo @relation(fields: vehiculoId, references: id)
+  vehiculoId Int      @unique
+}
